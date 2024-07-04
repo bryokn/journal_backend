@@ -38,12 +38,12 @@ journal_app/
 3. Install the required packages:
     `pip install -r requirements.txt`
 4. Set up the PostgreSQL database:
-    `CREATE DATABASE journal_app_db;`
-    `CREATE USER your_username WITH PASSWORD 'your_password';`
+    `CREATE DATABASE journal_app_db;` \n
+    `CREATE USER your_username WITH PASSWORD 'your_password';` \n
     `GRANT ALL PRIVILEGES ON DATABASE journal_app_db TO your_username;`
     `\q`
 5. Update the `config.py` file with your database URI:
-    `Copy
+    `SQLALCHEMY_DATABASE_URI = 'postgresql://your_username:your_password@localhost/journal_app_db'`
 6. Update the `config.py` file with your database URI:
     `postgresql://your_username:your_password@localhost/journal_app_db`
 7. Run the application:
