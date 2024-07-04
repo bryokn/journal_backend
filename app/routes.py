@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
-from app import db
+from app import db, blacklist
 from app.models import User, JournalEntry
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from datetime import datetime, timedelta
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+from datetime import datetime, timedelta, timezone
 
 main = Blueprint('main', __name__)
 
@@ -40,7 +40,10 @@ def login():
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
         #create access token if credentials are valid
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(
+            identity=user.id,
+            expires_delta=timedelta(hours=2)
+            )
         return jsonify({'access_token': access_token}), 200
     
     return jsonify({'message': 'Invalid username or password'}), 401
@@ -56,7 +59,7 @@ def create_entry():
         title=data['title'],
         content=data['content'],
         category=data['category'],
-        date=datetime.fromisoformat(data['date']),
+        date=datetime.now(timezone.utc),
         user_id=user_id
     )
     db.session.add(entry)
@@ -90,7 +93,7 @@ def manage_entry(entry_id):
         entry.title = data.get('title', entry.title)
         entry.content = data.get('content', entry.content)
         entry.category = data.get('category', entry.category)
-        entry.date = datetime.fromisoformat(data.get('date', entry.date.isoformat()))
+        entry.date = datetime.now(timezone.utc)
         db.session.commit()
         return jsonify({'message': 'Entry updated successfully'})
 
@@ -123,12 +126,14 @@ def get_summary():
     period = request.args.get('period', 'weekly')
     
     #determine start date based on period
+    now = datetime.now(timezone.utc)
     if period == 'daily':
-        start_date = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
     elif period == 'weekly':
-        start_date = datetime.utcnow() - timedelta(days=datetime.utcnow().weekday())
+        start_date = now - timedelta(days=now.weekday())
+        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
     elif period == 'monthly':
-        start_date = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     else:
         return jsonify({'message': 'Invalid period'}), 400
     
@@ -176,3 +181,14 @@ def manage_user():
 
         db.session.commit()
         return jsonify({'message': 'User updated successfully'})
+
+#logout route
+@main.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    try:
+        jti = get_jwt()['jti']
+        blacklist.add(jti)
+        return jsonify({"message": "Successfully logged out"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
