@@ -51,6 +51,7 @@ This will start the Flask development server, and your backend will be accessibl
 - GET /summary - Get a summary of journal entries (query parameter: period)
 - GET /user - Get user information
 - PUT /user - Update user information.
+- PUT /logout - User logs out and blacklists token.
 
 You can test these API endpoints using a tool like Postman.
 
