@@ -16,18 +16,6 @@ This backend implementation covers the features listed below:
 - Flask-JWT-Extended
 - PostgreSQL
 
-## Project Structure
-
-journal_app/
-├── app/
-│   ├── init.py
-│   ├── models.py
-│   ├── routes.py
-│   └── utils.py
-├── config.py
-├── requirements.txt
-└── run.py
-
 ### To set up and run the backend
 
 1. Clone the repository 
@@ -43,11 +31,11 @@ journal_app/
     - `GRANT ALL PRIVILEGES ON DATABASE journal_app_db TO your_username;`
     - `\q`
 5. Update the `config.py` file with your database URI:
-    `SQLALCHEMY_DATABASE_URI = 'postgresql://your_username:your_password@localhost/journal_app_db'`
+    - `SQLALCHEMY_DATABASE_URI = 'postgresql://your_username:your_password@localhost/journal_app_db'`
 6. Update the `config.py` file with your database URI:
-    `postgresql://your_username:your_password@localhost/journal_app_db`
+    - `postgresql://your_username:your_password@localhost/journal_app_db`
 7. Run the application:
-    `python3 run.py`
+    - `python3 run.py`
 
 This will start the Flask development server, and your backend will be accessible at `http://localhost:5000` or `http://127.0.0.1:5000`.
 
