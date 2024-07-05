@@ -67,7 +67,7 @@ def create_entry():
 
     return jsonify({'message': 'Entry created successfully', 'id': entry.id}), 201
 
-#manage (get, update, delete) a journal entry by ID
+#manage (get, update, delete) a journal entry by ID route
 @main.route('/entries/<int:entry_id>', methods=['GET', 'PUT', 'DELETE'])
 @jwt_required()
 def manage_entry(entry_id):
@@ -103,7 +103,7 @@ def manage_entry(entry_id):
         db.session.commit()
         return jsonify({'message': 'Entry deleted successfully'})
 
-#get all entries for the current user
+#get all entries for the current user route
 @main.route('/entries', methods=['GET'])
 @jwt_required()
 def get_entries():
