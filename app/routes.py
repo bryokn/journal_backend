@@ -156,6 +156,7 @@ def get_summary():
 
     return jsonify(summary)
 
+#update user route
 @main.route('/user', methods=['GET', 'PUT'])
 @jwt_required()
 def manage_user():
@@ -181,6 +182,23 @@ def manage_user():
 
         db.session.commit()
         return jsonify({'message': 'User updated successfully'})
+
+#categories route
+@main.route('/categories', methods=['GET'])
+@jwt_required()
+def get_categories():
+    user_id = get_jwt_identity()
+    
+    # Query all unique categories for the current user
+    categories = db.session.query(JournalEntry.category)\
+        .filter(JournalEntry.user_id == user_id)\
+        .distinct()\
+        .all()
+    
+    # Extract category names from the query result
+    category_list = [category[0] for category in categories]
+    
+    return jsonify({'categories': category_list})
 
 #logout route
 @main.route('/logout', methods=['POST'])
