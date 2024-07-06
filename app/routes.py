@@ -200,6 +200,24 @@ def get_categories():
     
     return jsonify({'categories': category_list})
 
+#view journals by category route
+@main.route('/entries/category/<string:category>', methods=['GET'])
+@jwt_required()
+def get_entries_by_category(category):
+    user_id = get_jwt_identity()
+    entries = JournalEntry.query.filter_by(user_id=user_id, category=category).all()
+    
+    if not entries:
+        return jsonify({'message': 'No entries found for this category'}), 404
+    
+    return jsonify([{
+        'id': entry.id,
+        'title': entry.title,
+        'content': entry.content,
+        'category': entry.category,
+        'date': entry.date.isoformat()
+    } for entry in entries])
+
 #logout route
 @main.route('/logout', methods=['POST'])
 @jwt_required()
